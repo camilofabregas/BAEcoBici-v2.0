@@ -58,7 +58,7 @@ def cargarUsuarios(usuarios, archUsuariosMaestro):
 	fin = ["", "", 9999999999999999, ""]
 	usuario = leer(archUsuariosMaestro, fin)
 	while int(usuario[2]) != fin[2]:
-		usuarios[usuario[2]] = [usuario[3], usuario[0].lower().replace(" ", "_"), usuario[1]]
+		usuarios[int(usuario[2])] = [usuario[3], usuario[0].lower().replace(" ", "_"), usuario[1]]
 		usuario = leer(archUsuariosMaestro, fin)
 
 def leer(archivo, fin):
