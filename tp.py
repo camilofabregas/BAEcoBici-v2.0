@@ -243,6 +243,7 @@ def devolucionAleatoriaBicicleta(estaciones, bici, estacionRetirar):
 def bloqueoExcesoHorario(usuarios, duracionViaje, usuario):
     if duracionViaje[0] == 1 and duracionViaje[1] >= 0:
         usuarios[usuario][0] = ""
+	grabarEnUsuariosMaestro(usuarios)
         print("Al exceder los 60 minutos de uso ha sido bloqueado")
 
 def acumularViajes(usuario, viajesFinalizados, bicicletaAsignada, estacionRetirar, estacionDevolver, horarioSalida, horarioLlegada):
@@ -340,6 +341,7 @@ def retirarBicicleta (usuarios, bicicletas, estaciones, dni, viajesEnCurso): # V
 			pin = input("[ERROR] Por favor, ingrese su numero de pin correctamente. Tiene {} intentos restantes: ".format(contador))
 			if contador == 1:
 				usuarios[dni][0] = ""
+				grabarEnUsuariosMaestro(usuarios)
 				limpiarPantalla()
 				print ("\n[INFO] El usuario {} fue bloqueado porque excedió la cantidad de intentos permitidos.".format(usuarios[dni][1]))
 				return None
