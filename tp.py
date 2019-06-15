@@ -102,11 +102,20 @@ def alta(usuarios):
 		apellido = solicitarValidarDatos("[SOLICITUD] Ingrese su apellido: ")
 		celular = solicitarValidarCelular()
 		usuarios[dni] = [pin, nombre + "_" + apellido, celular]
+		grabarEnUsuariosMaestro(usuarios)
 		limpiarPantalla() 
 		print("\n[EXITO] ¡Felicitaciones, {}, te has registrado con éxito!".format(nombre + "_" + apellido))
 		return usuarios
 	else:
 		print("\n\n[ERROR] El DNI ingresado ya está asociado a una cuenta en el sistema. Volviendo al menú principal...")
+
+def grabarEnUsuariosMaestro(usuarios):
+	arch = open("usuariosMaestro.csv", "w")
+	usuariosOrdenados = sorted(usuarios.items(), key = lambda x:x[0])
+	for usuario in usuariosOrdenados:
+		nom, ape = usuario[1][1].split("_")
+		arch.write("{} {},{},{},{}\n".format(nom.title(), ape.title(), usuario[1][2], usuario[0], usuario[1][0]))
+	arch.close()
 
 def modificacion (usuarios):
 	opcionElegida = 0 
@@ -139,6 +148,7 @@ def modificarNomApe(opcionElegida, usuarios, dni):
 		nombre = solicitarValidarDatos("[SOLICITUD] Ingrese su nombre: ")
 		apellido = solicitarValidarDatos("[SOLICITUD] Ingrese su apellido: ")
 		usuarios[dni][1] = nombre + "_" + apellido
+		grabarEnUsuariosMaestro(usuarios)
 		limpiarPantalla()
 		print ("\n[INFO] Nombre y apellido del usuario {} fue cambiado con éxito.".format(dni))
 
@@ -146,6 +156,7 @@ def modificarCelular(opcionElegida, usuarios, dni):
 	if opcionElegida == 3:
 		celular = solicitarValidarCelular()
 		usuarios [dni][2] = celular
+		grabarEnUsuariosMaestro(usuarios)
 		print ("[INFO] Celular del usuario {} cambiado con exito.".format(dni))
 
 def eliminarUsuario(opcionElegida, usuarios, dni):
@@ -153,6 +164,7 @@ def eliminarUsuario(opcionElegida, usuarios, dni):
 		confirmacion = input("El usuario de DNI {} será eliminado. ¿Desea confirmar? s/n: ".format(dni))
 		if confirmacion == "s":
 			del usuarios[dni]
+			grabarEnUsuariosMaestro(usuarios)
 			limpiarPantalla()
 			print("\n[INFO] El usuario {} fue eliminado con éxito.".format(dni))
 		else:
@@ -186,6 +198,7 @@ def desbloquear (usuarios):
             	print("\n[ERROR] El DNI ingresado no corresponde a un usuario bloqueado.")
             	usuarioElegido = int(solicitarValidarDigitos(7, 8, "[SOLICITUD] Ingrese el DNI del usuario a desbloquear: "))
             usuarios[usuarioElegido][0] = generarPin()
+            grabarEnUsuariosMaestro(usuarios)
             limpiarPantalla()
             print("\n[INFO] {} fue desbloqueado. Se le generó el PIN {}. Volviendo al menu de usuarios...".format(usuarios[usuarioElegido][1], usuarios[usuarioElegido][0]))
         else:
@@ -239,12 +252,7 @@ def acumularViajes(usuario, viajesFinalizados, bicicletaAsignada, estacionRetira
 		viajesFinalizados[usuario] = [(bicicletaAsignada, estacionRetirar, time(horaSalida, minSalida, segSalida), estacionDevolver, time(horaLlegada, minLlegada, segLlegada))]
 	else:
 		viajesFinalizados[usuario].append((bicicletaAsignada, estacionRetirar, time(horaSalida, minSalida, segSalida), estacionDevolver, time(horaLlegada, minLlegada, segLlegada)))
-"""
-def viajesAleatoriosMultiples(usuarios, bicicletas, estaciones, usuariosEnViaje, viajesFinalizados):
-	cantidad = ingresarEntreRangos(1, 100, "Ingrese entre 1 y 100 la cantidad de viajes aleatorios que desea generar: ")
-	for viaje in range(cantidad):
-		viajeAleatorio(usuarios, bicicletas, estaciones, usuariosEnViaje, viajesFinalizados)
-"""
+
 def viajesAleatoriosMultiples(usuarios, bicicletas, estaciones, usuariosEnViaje, viajesFinalizados):
 	cantidad = ingresarEntreRangos(1, 100, "\n[SOLICITUD] Ingrese entre 1 y 100 la cantidad de viajes aleatorios que desea generar: ")
 	for viaje in range(cantidad):
@@ -314,6 +322,7 @@ def cambiarPin(usuarios, dni, pinViejo):
 			print("\n[ERROR] Los pines no coinciden, intente de nuevo...")
 			pinNuevoRepetido = solicitarValidarDigitos(4, 4,"[SOLICITUD] Ingrese nuevamente el PIN deseado: ")
 		usuarios[dni][0] = pinNuevo
+		grabarEnUsuariosMaestro(usuarios)
 		limpiarPantalla()
 		print("\n[INFO] El PIN fue cambiado con éxito. Volviendo al menu de usuario...")
 	else:
