@@ -1,5 +1,5 @@
 from imprimirMenus import *
-#from generarEstructuras import generarUsuarios, generarBicicletas, generarEstaciones
+from generarEstructuras import generarUsuarios, generarBicicletas, generarEstaciones
 from cargarArchivos import *
 from validaciones import *
 from informes import *
