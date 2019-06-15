@@ -15,7 +15,7 @@ def chequearUsuariosMaestro(usuarios):
 		archUsuariosMaestro = open("usuariosMaestro.csv", "r")
 		print("[INFO] No se han unificado los usuarios ya que un archivo maestro fue encontrado en el sistema.")
 	except FileNotFoundError:
-		archivoUsuariosMaestro = unificarUsuarios()
+		archUsuariosMaestro = unificarUsuarios()
 	cargarUsuarios(usuarios, archUsuariosMaestro)
 
 def unificarUsuarios():
