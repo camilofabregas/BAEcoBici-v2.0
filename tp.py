@@ -20,9 +20,9 @@ def limpiarPantalla():
 
 def menuPrincipal(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados):
 	opcionElegida = 0
-	while opcionElegida != 6:
+	while opcionElegida != 5:
 		imprimirMenuPrincipal() # En el módulo menuYSubmenus
-		opcionElegida = ingresarEntreRangos(1,6,"[SOLICITUD] Ingrese el número de opción (1 a 6): ")
+		opcionElegida = ingresarEntreRangos(1,6,"[SOLICITUD] Ingrese el número de opción (1 a 5): ")
 		submenuElegido(opcionElegida, usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados)
 
 def ingresarEntreRangos(inicio, fin, mensaje): #Para ingresar (y validar) una opción dentro de un rango especifico.
@@ -34,47 +34,48 @@ def ingresarEntreRangos(inicio, fin, mensaje): #Para ingresar (y validar) una op
 	return int(opcion)
 
 def submenuElegido(opcionElegida, usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados): # Genera el submenu de la opción que elegí en el menu principal
-	if opcionElegida != 5 and opcionElegida != 6: # Si no es ni "Salir del programa" ni "Ingresar al sistema"
+	if opcionElegida != 4 and opcionElegida != 5: # Si no es ni "Salir del programa" ni "Ingresar al sistema"
 		rangoSubmenuElegido = calcularRangoSubmenuElegido(opcionElegida)
 		opcionSubmenu = 0
 		while opcionSubmenu != rangoSubmenuElegido:
 			imprimirSubmenuElegido(opcionElegida) # En el módulo menuYSubmenus
 			opcionSubmenu = ingresarEntreRangos(1,rangoSubmenuElegido,"[SOLICITUD] Ingrese el número de opción (1 a {}): ".format(rangoSubmenuElegido))
 			invocarFuncionSubmenuElegido(opcionElegida, opcionSubmenu, usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados)
-	elif opcionElegida == 5:
+	elif opcionElegida == 4:
 		menuUsuario(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados)
 
 def calcularRangoSubmenuElegido(opcionElegida):
-	if opcionElegida == 1 or opcionElegida == 3:
-		return 3
-	elif opcionElegida == 2 or opcionElegida == 4:
+	if opcionElegida == 1:
 		return 5
+	elif opcionElegida == 2:
+		return 3
+	elif opcionElegida == 3:
+		return 6
 
 def invocarFuncionSubmenuElegido(opcionElegida, opcionSubmenu, usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados):
 	if opcionElegida == 1 and opcionSubmenu == 1:
-		cargarDatos(usuarios, bicicletas, estaciones, "predefinida")
-	elif opcionElegida == 1 and opcionSubmenu == 2:
-		cargarDatos(usuarios, bicicletas, estaciones, "aleatoria") # Idem pero cambia la distribución de bicicletas.
-	elif opcionElegida == 2 and opcionSubmenu == 1:
 		listado(usuarios)
-	elif opcionElegida == 2 and opcionSubmenu == 2:
+	elif opcionElegida == 1 and opcionSubmenu == 2:
 		alta(usuarios)
-	elif opcionElegida == 2 and opcionSubmenu == 3:
+	elif opcionElegida == 1 and opcionSubmenu == 3:
 		modificacion(usuarios)
-	elif opcionElegida == 2 and opcionSubmenu == 4:
+	elif opcionElegida == 1 and opcionSubmenu == 4:
 		desbloquear(usuarios)
-	elif opcionElegida == 3 and opcionSubmenu == 1:
+	elif opcionElegida == 2 and opcionSubmenu == 1:
 		viajeAleatorio(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados)
-	elif opcionElegida == 3 and opcionSubmenu == 2:
+	elif opcionElegida == 2 and opcionSubmenu == 2:
 		viajesAleatoriosMultiples(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados)
-	elif opcionElegida == 4 and opcionSubmenu == 1:
+	elif opcionElegida == 3 and opcionSubmenu == 1:
 		topUsuariosCantidadViajes(usuarios, viajesFinalizados) # En el módulo informes
-	elif opcionElegida == 4 and opcionSubmenu == 2:
+	elif opcionElegida == 3 and opcionSubmenu == 2:
 		topUsuariosDuracionViajes(viajesFinalizados) # En el módulo informes
-	elif opcionElegida == 4 and opcionSubmenu == 3:
+	elif opcionElegida == 3 and opcionSubmenu == 3:
 		bicicletasEnReparacion(bicicletas) # En el módulo informes
-	elif opcionElegida == 4 and opcionSubmenu == 4:
+	elif opcionElegida == 3 and opcionSubmenu == 4:
 		estacionesMasActivas(estaciones, viajesFinalizados) # En el módulo informes
+	elif opcionElegida == 3 and opcionSubmenu == 5:
+		viajesRobados()
+		
 
 def cargarDatos(usuarios, bicicletas, estaciones, tipoDeCarga):
 	generarUsuarios(usuarios) # En el módulo generarEstructuras
@@ -243,7 +244,7 @@ def devolucionAleatoriaBicicleta(estaciones, bici, estacionRetirar):
 def bloqueoExcesoHorario(usuarios, duracionViaje, usuario):
     if duracionViaje[0] == 1 and duracionViaje[1] >= 0:
         usuarios[usuario][0] = ""
-	grabarEnUsuariosMaestro(usuarios)
+        grabarEnUsuariosMaestro(usuarios)
         print("Al exceder los 60 minutos de uso ha sido bloqueado")
 
 def acumularViajes(usuario, viajesFinalizados, bicicletaAsignada, estacionRetirar, estacionDevolver, horarioSalida, horarioLlegada):
