@@ -9,13 +9,13 @@ def cargarArchivos():
 	#cargarArchivoEnMemoria(archViajesFinalizados, viajesFinalizados)
 	return usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados
 
-
 def chequearUsuariosMaestro(usuarios):
 	try:
 		archUsuariosMaestro = open("usuariosMaestro.csv", "r")
-		print("[INFO] No se han unificado los usuarios ya que un archivo maestro fue encontrado en el sistema.")
+		print("\n\n[INFO] No se han unificado los usuarios ya que un archivo maestro fue encontrado en el sistema.")
 	except FileNotFoundError:
 		archUsuariosMaestro = unificarUsuarios()
+		print("\n\n[INFO] Se han detectado 4 archivos de usuarios, los cuales fueron mezclados por DNI en un único archivo maestro.")
 	cargarUsuarios(usuarios, archUsuariosMaestro)
 
 def unificarUsuarios():
