@@ -22,7 +22,7 @@ def solicitarValidarCelular():
 	while len(digitos) < 8 or valido == False:
 		digitos = []
 		valido = True
-		celular = input("Ingrese celular pudiendo utilizar '()+-' como caracteres adicionales: ")
+		celular = input("[SOLICITUD] Ingrese celular pudiendo utilizar '()+-' como caracteres adicionales: ")
 		for caracter in celular:
 			if caracter.isdigit():
 				digitos.append(caracter)
