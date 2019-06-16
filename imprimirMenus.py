@@ -1,11 +1,10 @@
 def imprimirMenuPrincipal():
 	print("\n\n***** MENU PRINCIPAL *****")
-	print("1. Carga de datos")#\n**** a. Carga automática\n**** b. Carga automática aleatoria")
-	print("2. Usuarios")#\n**** a. Listado\n**** b. Alta\n**** c. Modificación\n**** d. Desbloquear")
-	print("3. Retiros automáticos")#\n**** a. Viaje aleatorio\n**** b. Viajes aleatorios múltiples")
-	print("4. Informes")#\n**** a. Usuarios con mayor cantidad de viajes\n**** b. Usuarios con mayor duración acumulada de viajes\n**** c. Bicicletas en reparación\n**** d. Estaciones más activas")
-	print("5. Ingresar al sistema")
-	print("6. Salir del programa")
+	print("1. Usuarios")#\n**** a. Listado\n**** b. Alta\n**** c. Modificación\n**** d. Desbloquear")
+	print("2. Retiros automáticos")#\n**** a. Viaje aleatorio\n**** b. Viajes aleatorios múltiples")
+	print("3. Informes")#\n**** a. Usuarios con mayor cantidad de viajes\n**** b. Usuarios con mayor duración acumulada de viajes\n**** c. Bicicletas en reparación\n**** d. Estaciones más activas")
+	print("4. Ingresar al sistema")
+	print("5. Salir del programa")
 
 def imprimirLogo():
 	print("\n**************************************")
