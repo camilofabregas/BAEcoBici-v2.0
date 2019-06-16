@@ -81,3 +81,6 @@ def estacionesMasActivas(estaciones, viajesFinalizados):
 	topOrdenado = sorted(top.items(), key = lambda x:x[1], reverse = True)
 	for estaciones in topOrdenado:
 		print("Estacion {} con {} retiros y devoluciones.".format(estaciones[0], estaciones[1]))
+		
+def viajesRobados():
+	print("VIAJES ROBADOS")
