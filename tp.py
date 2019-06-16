@@ -9,6 +9,7 @@ import os
 
 def main():
 	usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados = cargarArchivos()
+	# Acá iría la función que termina automáticamente los viajes pendientes.
 	imprimirLogo() # En el módulo menuYSubmenus
 	menuPrincipal(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados)
 
