@@ -3,8 +3,8 @@ from generarEstructuras import generarUsuarios, generarBicicletas, generarEstaci
 from cargarArchivos import *
 from validaciones import *
 from informes import *
-import random
 from datetime import *
+import random
 import os
 
 def main():
