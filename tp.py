@@ -1,5 +1,4 @@
 from imprimirMenus import *
-from generarEstructuras import generarUsuarios, generarBicicletas, generarEstaciones
 from cargarArchivos import *
 from validaciones import *
 from informes import *
@@ -23,7 +22,7 @@ def menuPrincipal(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinaliz
 	opcionElegida = 0
 	while opcionElegida != 5:
 		imprimirMenuPrincipal() # En el módulo menuYSubmenus
-		opcionElegida = ingresarEntreRangos(1,6,"[SOLICITUD] Ingrese el número de opción (1 a 5): ")
+		opcionElegida = ingresarEntreRangos(1,5,"[SOLICITUD] Ingrese el número de opción (1 a 5): ")
 		submenuElegido(opcionElegida, usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados)
 
 def ingresarEntreRangos(inicio, fin, mensaje): #Para ingresar (y validar) una opción dentro de un rango especifico.
