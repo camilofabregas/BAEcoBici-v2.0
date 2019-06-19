@@ -30,4 +30,4 @@ def solicitarValidarCelular():
 				caracteresEspeciales.remove(caracter)
 			else:
 				valido = False
-	return celular
+	return celular.replace(" ", "-")
