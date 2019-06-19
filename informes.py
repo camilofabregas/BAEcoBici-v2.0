@@ -51,7 +51,7 @@ def topUsuariosDuracionViajes(viajesFinalizados):
 	print("\n**** USUARIOS CON MAYOR TIEMPO DE VIAJE ****\n")
 	topOrdenado = sorted(usuariosMasDuracion.items(), key = lambda x: x[1], reverse = True)
 	contador = 1
-	for usuarios in topOrdenado:
+	for usuarios in topOrdenado[0:5]:
 		print(contador,"El usuario {} con {} hs de viaje.".format(usuarios[0], usuarios[1]))
 		contador +=1
 
