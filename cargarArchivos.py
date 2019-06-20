@@ -1,3 +1,4 @@
+import pickle
 import random
 import csv
 
@@ -7,10 +8,7 @@ def cargarArchivos():
 	cargarEstaciones(estaciones)
 	cargarBicicletas(bicicletas)
 	repartirBicicletasEstacion(estaciones, bicicletas)
-	cargar
-	#cargarArchivoEnMemoria(archBicicletas, bicicletas)
-	#cargarArchivoEnMemoria(archEstaciones, estaciones)
-	#cargarArchivoEnMemoria(archViajesFinalizados, viajesFinalizados)
+	cargarViajesEnCurso(viajesEnCurso)
 	return usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados
 
 def chequearUsuariosMaestro(usuarios):
@@ -111,6 +109,20 @@ def repartirBicicletasEstacion(estaciones, bicicletas):
 			lBicicletas.remove(biciRetirada)
 		contador += 1
 	return estaciones, lBicicletas
+
+def cargarViajesEnCurso(viajesEnCurso):
+	try:
+		with open("viajesEnCurso.bin", "rb") as arch:
+			seguir = True
+			while seguir:
+				try:
+					viaje = pickle.load(arch)
+					viajesEnCurso[viaje[0]] = [viaje[1], viaje[2], viaje[3]]
+				except EOFError:
+					seguir = False
+			return viajesEnCurso
+	except FileNotFoundError:
+		return viajesEnCurso
 
 def leer(archivo, fin):
 	linea = archivo.readline()
