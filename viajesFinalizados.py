@@ -58,3 +58,7 @@ def leer(archivo, fin):
 	linea = archivo.readline()
 	lista = linea.rstrip().split(",")
 	return lista if linea else fin
+
+viajesFinalizados = {}
+cargarViajesFinalizados (viajesFinalizados)
+sumarViajes(viajesFinalizados)
