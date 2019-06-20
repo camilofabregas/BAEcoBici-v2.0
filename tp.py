@@ -3,12 +3,13 @@ from cargarArchivos import *
 from validaciones import *
 from informes import *
 from datetime import *
+import pickle
 import random
 import os
 
 def main():
 	usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados = cargarArchivos()
-	# Acá iría la función que termina automáticamente los viajes pendientes.
+	simularViajesPendientes(estaciones, viajesEnCurso, usuarios, bicicletas, viajesFinalizados)
 	imprimirLogo() # En el módulo menuYSubmenus
 	menuPrincipal(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados)
 
@@ -17,6 +18,22 @@ def limpiarPantalla():
 		return os.system("cls")
 	else:
 		return os.system("clear")
+
+def simularViajesPendientes(estaciones, viajesEnCurso, usuarios, bicicletas, viajesFinalizados):
+	print("\n")
+	if viajesEnCurso:
+		estacionesConLugar = [] # Busco estaciones que tengan lugar (que haya por lo menos un anclaje "")
+		for dni in viajesEnCurso:
+			for estacion in estaciones:
+				for anclaje in estaciones[estacion]["Bicicletas"]:
+					if estacion not in estacionesConLugar and estaciones[estacion]["Bicicletas"][anclaje] == "":
+						estacionesConLugar.append(estacion)
+			idEstacion = random.choice(estacionesConLugar)
+			guardarBicicleta(0, idEstacion, viajesEnCurso, usuarios, dni, estaciones, bicicletas, viajesFinalizados) # Llamo a la función guardarBicicleta con choice = 0
+			# Ir a la función para saber qué es choice = 0
+	arch = open("viajesEnCurso.bin", "wb") # Limpio (vacío) el archivo binario de viajesEnCurso.
+	arch.close()
+	viajesEnCurso.clear()
 
 def menuPrincipal(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados):
 	opcionElegida = 0
@@ -76,7 +93,6 @@ def invocarFuncionSubmenuElegido(opcionElegida, opcionSubmenu, usuarios, bicicle
 	elif opcionElegida == 3 and opcionSubmenu == 5:
 		viajesRobados()
 		
-
 def cargarDatos(usuarios, bicicletas, estaciones, tipoDeCarga):
 	generarUsuarios(usuarios) # En el módulo generarEstructuras
 	generarBicicletas(bicicletas) # En el módulo generarEstructuras
@@ -241,11 +257,17 @@ def devolucionAleatoriaBicicleta(estaciones, bici, estacionRetirar):
                 estaciones[estacion]["Bicicletas"][anclaje] = bici
                 return estacion
 
-def bloqueoExcesoHorario(usuarios, duracionViaje, usuario):
+def bloqueoExcesoHorario(chequeo, usuarios, duracionViaje, usuario):
+	# Para saber qué es "chequeo", leer la explicación en la función guardarBicicleta
     if duracionViaje[0] == 1 and duracionViaje[1] >= 0:
         usuarios[usuario][0] = ""
         grabarEnUsuariosMaestro(usuarios)
-        print("Al exceder los 60 minutos de uso ha sido bloqueado")
+        if chequeo == 1:
+        	print("[AVISO] Tu cuenta fue bloqueada por exceder los 60 minutos de viaje.")
+        	return 0
+        else:
+        	return 1
+
 
 def acumularViajes(usuario, viajesFinalizados, bicicletaAsignada, estacionRetirar, estacionDevolver, horarioSalida, horarioLlegada):
 	horaSalida, minSalida, segSalida = horarioSalida
@@ -371,7 +393,15 @@ def asignarBicicleta(estaciones, bicicletas, viajesEnCurso, idEstacion, dni):
 		horas, minutos, segundos = horarios (0, 0, 0, 23, 60, 60)
 	horarioSalida = time(horas, minutos, segundos)
 	bicicletas[bicicletaRetirada] = ["En condiciones", "En circulacion"]
-	viajesEnCurso[dni] = [bicicletaRetirada, idEstacion, horarioSalida]	
+	viajesEnCurso[dni] = [bicicletaRetirada, idEstacion, horarioSalida]
+	grabarEnViajesEnCurso(dni, bicicletaRetirada, idEstacion, horarioSalida)
+
+def grabarEnViajesEnCurso(dni, bicicletaRetirada, idEstacion, horarioSalida):
+	with open("viajesEnCurso.bin", "wb") as arch:
+		pkl = pickle.Pickler(arch)
+		viaje = []
+		viaje = [dni, bicicletaRetirada, idEstacion, horarioSalida]
+		pkl.dump(viaje)
 
 def devolverBicicleta(estaciones, dni, viajesEnCurso, usuarios, bicicletas, viajesFinalizados):
     if dni not in viajesEnCurso:
@@ -393,11 +423,16 @@ def verificarLugar(idEstacion, estaciones, viajesEnCurso, usuarios, dni, bicicle
 	if len(estaciones[idEstacion]["Bicicletas"]) - anclajesLibres >= estaciones[idEstacion]["Capacidad"]:
 		print("[INFO] No hay lugar en esta estación para anclar su bicicleta. Por favor diríjase hacia otra estación.")
 	else:
-		guardarBicicleta(idEstacion, viajesEnCurso, usuarios, dni, estaciones, bicicletas, viajesFinalizados)
+		guardarBicicleta(1, idEstacion, viajesEnCurso, usuarios, dni, estaciones, bicicletas, viajesFinalizados)
 
-def guardarBicicleta(idEstacion, viajesEnCurso, usuarios, dni, estaciones, bicicletas, viajesFinalizados): #Ancla bicicleta a estación elegida o la envía a reparar.
+def guardarBicicleta(chequeo, idEstacion, viajesEnCurso, usuarios, dni, estaciones, bicicletas, viajesFinalizados): #Ancla bicicleta a estación elegida o la envía a reparar.
+	# Chequeo = 0 signfica que entramos acá para simular viajes.
+	# Chequeo = 1 significa que entramos acá porque un usuario real quiere devolver una bicicleta.
 	idBicicleta = viajesEnCurso[dni][0]
-	estadoBici = input("\n[SOLICITUD] ¿Necesita reparación la bicicleta? s/n: ")
+	if chequeo == 0:
+		estadoBici = "n" # Como el chequeo es 0, salteo la pregunta de reparar bici.
+	else:
+		estadoBici = input("\n[SOLICITUD] ¿Necesita reparación la bicicleta? s/n: ")
 	while estadoBici != "s" and estadoBici != "n":
 		print("[ERROR] Ingrese una opción válida.")
 		estadoBici = input("\n[SOLICITUD] ¿Necesita reparación la bicicleta? s/n: ")
@@ -413,9 +448,17 @@ def guardarBicicleta(idEstacion, viajesEnCurso, usuarios, dni, estaciones, bicic
 	duracionViaje = horarios(0, 0, 0, 2, 15, 60)
 	horarioSalida = (abs(viajesEnCurso[dni][2].hour), abs(viajesEnCurso[dni][2].minute), abs(viajesEnCurso[dni][2].second))
 	horarioLlegada = calcularHoraLlegada(horarioSalida, duracionViaje)
-	bloqueoExcesoHorario(usuarios, duracionViaje, dni)
+	fueBloqueado = bloqueoExcesoHorario(chequeo, usuarios, duracionViaje, dni)
 	acumularViajes(dni, viajesFinalizados, idBicicleta, viajesEnCurso[dni][1], idEstacion, horarioSalida, horarioLlegada)
-	del(viajesEnCurso[dni])
+	if chequeo == 1:
+		del(viajesEnCurso[dni])
+		arch = open("viajesEnCurso.bin", "wb") # Limpio (vacío) el archivo binario de viajesEnCurso.
+		arch.close()
+	else:
+		if fueBloqueado == 1:
+			print("[SIMULACIÓN] El usuario {} devolvió la bicicleta en la estación {} a las {} horas. \nAdemás, fue bloqueado por superar la hora de viaje.".format(usuarios[dni][1], estaciones[idEstacion]["Dirección"], str(horarioLlegada[0])+":"+str(horarioLlegada[1])+":"+str(horarioLlegada[2])))
+		else:
+			print("[SIMULACIÓN] El usuario {} devolvió la bicicleta en la estación {} a las {} horas.".format(usuarios[dni][1], estaciones[idEstacion]["Dirección"], str(horarioLlegada[0])+":"+str(horarioLlegada[1])+":"+str(horarioLlegada[2])))
 	
 def horarios (horaMinimo, minutosMinimo, segundosMinimo, horaMaximo, minutosMaximo, segundosMaximo):
 	horas = random.randrange(horaMinimo, horaMaximo)
