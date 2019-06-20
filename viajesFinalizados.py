@@ -6,70 +6,55 @@ def cargarViajesFinalizados (viajesFinalizados):
 	next(archivoViajes)
 	viaje = leer(archivoViajes, fin)
 	while int(viaje[6]) != fin[6]:
-		horarioSalida = int(viaje[3][0:2]), int(viaje[3][3:5]), int(viaje[3][6:])
+		horarioSalida = int(viaje[3][0:2]), int(viaje[3][3:5]), int(viaje[3][6:]) 
 		horarioLlegada = int(viaje[5][0:2]), int(viaje[5][3:5]), int(viaje[5][6:])
-		acumularViajes(int(viaje[2]), viajesFinalizados, int(viaje[6]), int(viaje[0]), int(viaje[1]), horarioSalida, horarioLlegada)
+		duracionViaje = int(viaje[4][0:2]), int(viaje[4][3:5]), int(viaje[4][6:])
+		acumularViajes(int(viaje[2]), viajesFinalizados, int(viaje[6]), int(viaje[0]), int(viaje[1]), duracionViaje)
+		#acumularViajes(int(viaje[2]), viajesFinalizados, int(viaje[6]), int(viaje[0]), int(viaje[1]), horarioSalida, horarioLlegada)
 		viaje = leer(archivoViajes, fin)
 
-def acumularViajes(usuario, viajesFinalizados, bicicletaAsignada, estacionRetirar, estacionDevolver, horarioSalida, horarioLlegada): #esta la saque del tp para guardar los viajes en el diccionario
-	horaSalida, minSalida, segSalida = horarioSalida
-	horaLlegada, minLlegada, segLlegada = horarioLlegada
-	if usuario not in viajesFinalizados:
-		viajesFinalizados[usuario] = [(bicicletaAsignada, estacionRetirar, time(horaSalida, minSalida, segSalida), estacionDevolver, time(horaLlegada, minLlegada, segLlegada))]
-	else:
-		viajesFinalizados[usuario].append((bicicletaAsignada, estacionRetirar, time(horaSalida, minSalida, segSalida), estacionDevolver, time(horaLlegada, minLlegada, segLlegada)))
 
-def topUsuariosDuracionViajes(viajesFinalizados): #esta la saque de informes para ver si se imprimia bien este informe
-	usuariosMasDuracion = {}
+def acumularViajes(usuario, viajesFinalizados, bicicletaAsignada, estacionRetirar, estacionDevolver, duracionViaje): #esta la saque del tp para guardar los viajes en el diccionario
+	horaViaje, minutoViaje, segundoViaje = duracionViaje
+	if usuario not in viajesFinalizados:
+		viajesFinalizados[usuario] = [(bicicletaAsignada, estacionRetirar, estacionDevolver, time(horaViaje, minutoViaje, segundoViaje))]
+	else:
+		viajesFinalizados[usuario].append((bicicletaAsignada, estacionRetirar,  estacionDevolver,time(horaViaje, minutoViaje, segundoViaje) ))
+
+def sumarViajes(viajesFinalizados):
+	duraciones = {}
 	for dni in viajesFinalizados:
+		duracionDias = 0
 		duracionHora = 0
 		duracionMin = 0
 		duracionSeg = 0
 		for viaje in range(len(viajesFinalizados[dni])):
-			salida = viajesFinalizados[dni][viaje][2]
-			llegada = viajesFinalizados[dni][viaje][4]
-			diferenciaHora = abs((llegada.hour - salida.hour))
-			diferenciaMinutos = abs((llegada.minute - salida.minute))
-			diferenciaSegundos = abs((llegada.second - salida.second))
-			duracionHora += diferenciaHora
-			duracionMin += diferenciaMinutos
-			duracionSeg += diferenciaSegundos
-			if duracionSeg >= 60:
-				duracionMin += 1
-				duracionSeg = duracionSeg - 60
-			if duracionMin >= 60:
-				duracionHora += 1
-				duracionMin = duracionMin - 60
-		duracion = time(duracionHora, duracionMin, duracionSeg)
-		if dni not in usuariosMasDuracion:
-			usuariosMasDuracion[dni] = duracion
-		else:
-			sumaSegundos = (usuariosMasDuracion[dni].second + duracion.second)
-			if sumaSegundos >= 60:
-				sumaMinutos = (usuariosMasDuracion[dni].minute + duracion.minute) + 1
-				sumaSegundos = sumaSegundos - 60
-			else:
-				sumaMinutos = (usuariosMasDuracion[dni].minute + duracion.minute)
-			if sumaMinutos >= 60:
-				sumaHoras = (usuariosMasDuracion[dni].hour + duracion.hour)
-				sumaMinutos = sumaMinutos - 60
-			else: 
-				sumaHoras = (usuariosMasDuracion[dni].hour + duracion.hour)
-			usuariosMasDuracion[dni] = time(sumaHoras, sumaMinutos, sumaSegundos)
-	print("\n**** USUARIOS CON MAYOR TIEMPO DE VIAJE ****\n")
-	topOrdenado = sorted(usuariosMasDuracion.items(), key = lambda x: x[1], reverse = True)
+			duracionHora += viajesFinalizados[dni][viaje][3].hour
+			duracionMin += viajesFinalizados[dni][viaje][3].minute
+			duracionSeg += viajesFinalizados[dni][viaje][3].second
+		if duracionSeg >= 60:
+			diferencia1 = duracionSeg // 60
+			sumar1 = duracionSeg % 60
+			duracionMin += diferencia1
+			duracionSeg = sumar1
+		if duracionMin >= 60:
+			diferencia2 = duracionMin // 60
+			sumar2 = duracionMin % 60
+			duracionHora += diferencia2
+			duracionMin = sumar2
+		if duracionHora >= 24:
+			diferencia3 = duracionHora // 24
+			sumar3 = duracionHora % 24
+			duracionDias += diferencia3
+			duracionHora = sumar3
+		duraciones[dni] = [ duracionDias, time(duracionHora, duracionMin, duracionSeg)]
+	topOrdenado = sorted(duraciones.items(), key = lambda x: x[1], reverse = True)
 	contador = 1
 	for usuarios in topOrdenado[0:5]:
-		print(contador,"El usuario {} con {} hs de viaje.".format(usuarios[0], usuarios[1]))
+		print(contador,"El usuario {} con {} dias y {} hs de viaje.".format(usuarios[0], usuarios[1][0], usuarios[1][1]))
 		contador +=1
-
 
 def leer(archivo, fin):
 	linea = archivo.readline()
 	lista = linea.rstrip().split(",")
 	return lista if linea else fin
-
-viajesFinalizados = {}
-cargarViajesFinalizados(viajesFinalizados)
-topUsuariosDuracionViajes(viajesFinalizados)
-#print(viajesFinalizados)
