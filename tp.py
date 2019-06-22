@@ -8,9 +8,10 @@ import random
 import os
 
 def main():
+	limpiarPantalla()
+	imprimirLogo() # En el módulo menuYSubmenus
 	usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados = cargarArchivos()
 	simularViajesPendientes(estaciones, viajesEnCurso, usuarios, bicicletas, viajesFinalizados)
-	imprimirLogo() # En el módulo menuYSubmenus
 	menuPrincipal(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados)
 
 def limpiarPantalla():
@@ -39,7 +40,7 @@ def menuPrincipal(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinaliz
 	opcionElegida = 0
 	while opcionElegida != 5:
 		imprimirMenuPrincipal() # En el módulo menuYSubmenus
-		opcionElegida = ingresarEntreRangos(1,5,"[SOLICITUD] Ingrese el número de opción (1 a 5): ")
+		opcionElegida = ingresarEntreRangos(1,5," [SOLICITUD] Ingrese el número de opción (1 a 5): ")
 		submenuElegido(opcionElegida, usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados)
 
 def ingresarEntreRangos(inicio, fin, mensaje): #Para ingresar (y validar) una opción dentro de un rango especifico.
@@ -235,7 +236,7 @@ def viajeAleatorio(usuarios, bicicletas, estaciones, usuariosEnViaje, viajesFina
 		duracionViaje = horarios(0, 0, 0, 2, 30, 60)  # maximo 90 minutos que equivale a 1:30:00hs
 		horarioLlegada = calcularHoraLlegada(horarioSalida, duracionViaje)
 		print("{} devolvió la bicicleta {} en la estación N°{} de {} a las {}:{}:{}hs".format(usuarios[usuario][1], bicicletaAsignada, estacionDevolver, estaciones[estacionDevolver]["Dirección"], horarioLlegada[0], horarioLlegada[1], horarioLlegada[2]))
-		bloqueoExcesoHorario(usuarios, duracionViaje, usuario)
+		bloqueoExcesoHorario(1, usuarios, duracionViaje, usuario)
 		acumularViajes(usuario, viajesFinalizados, bicicletaAsignada, estacionRetirar, estacionDevolver, horarioSalida, horarioLlegada)
 
 def retiroAleatorioBicicleta(estaciones, bicicletas):
@@ -302,9 +303,9 @@ def menuUsuario(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizad
 	dni, pin = iniciarSesion(usuarios)
 	if dni != 0:
 		opcionElegida = 0
-		while opcionElegida != 4:
+		while opcionElegida != 5:
 			imprimirMenuUsuario()
-			opcionElegida = ingresarEntreRangos(1,4,"[SOLICITUD] Ingrese el número de opción (1 a 4): ")
+			opcionElegida = ingresarEntreRangos(1,5,"[SOLICITUD] Ingrese el número de opción (1 a 5): ")
 			submenuUsuario(usuarios, bicicletas, estaciones, opcionElegida, dni, pin, viajesEnCurso, viajesFinalizados)
 
 def iniciarSesion(usuarios):
@@ -333,6 +334,8 @@ def submenuUsuario(usuarios, bicicletas, estaciones, opcionElegida, dni, pin, vi
 		retirarBicicleta(usuarios, bicicletas, estaciones, dni, viajesEnCurso)
 	elif opcionElegida == 3:
 		devolverBicicleta(estaciones, dni, viajesEnCurso, usuarios, bicicletas, viajesFinalizados)
+	elif opcionElegida == 4:
+		robarBicicleta()
 
 def cambiarPin(usuarios, dni, pinViejo):
 	if usuarios[dni][0] != "":
@@ -397,7 +400,7 @@ def asignarBicicleta(estaciones, bicicletas, viajesEnCurso, idEstacion, dni):
 	grabarEnViajesEnCurso(dni, bicicletaRetirada, idEstacion, horarioSalida)
 
 def grabarEnViajesEnCurso(dni, bicicletaRetirada, idEstacion, horarioSalida):
-	with open("viajesEnCurso.bin", "wb") as arch:
+	with open("viajesEnCurso.bin", "ab") as arch:
 		pkl = pickle.Pickler(arch)
 		viaje = []
 		viaje = [dni, bicicletaRetirada, idEstacion, horarioSalida]
@@ -456,14 +459,17 @@ def guardarBicicleta(chequeo, idEstacion, viajesEnCurso, usuarios, dni, estacion
 		arch.close()
 	else:
 		if fueBloqueado == 1:
-			print("[SIMULACIÓN] El usuario {} devolvió la bicicleta en la estación {} a las {} horas. \nAdemás, fue bloqueado por superar la hora de viaje.".format(usuarios[dni][1], estaciones[idEstacion]["Dirección"], str(horarioLlegada[0])+":"+str(horarioLlegada[1])+":"+str(horarioLlegada[2])))
+			print("[SIMULACIÓN] El usuario {} devolvió la bicicleta en la estación {} a las {} horas. \n             Además, fue bloqueado por superar la hora de viaje.\n".format(usuarios[dni][1], estaciones[idEstacion]["Dirección"], str(horarioLlegada[0])+":"+str(horarioLlegada[1])+":"+str(horarioLlegada[2])))
 		else:
-			print("[SIMULACIÓN] El usuario {} devolvió la bicicleta en la estación {} a las {} horas.".format(usuarios[dni][1], estaciones[idEstacion]["Dirección"], str(horarioLlegada[0])+":"+str(horarioLlegada[1])+":"+str(horarioLlegada[2])))
+			print("[SIMULACIÓN] El usuario {} devolvió la bicicleta en la estación {} a las {} horas.\n".format(usuarios[dni][1], estaciones[idEstacion]["Dirección"], str(horarioLlegada[0])+":"+str(horarioLlegada[1])+":"+str(horarioLlegada[2])))
 	
 def horarios (horaMinimo, minutosMinimo, segundosMinimo, horaMaximo, minutosMaximo, segundosMaximo):
 	horas = random.randrange(horaMinimo, horaMaximo)
 	minutos = random.randrange(minutosMinimo, minutosMaximo)
 	segundos = random.randrange(segundosMinimo, segundosMaximo)
 	return (horas, minutos, segundos)
+
+def robarBicicleta():
+	print("ROBAR BICICLETA")
 
 main()
