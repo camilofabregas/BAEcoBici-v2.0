@@ -14,10 +14,10 @@ def cargarArchivos():
 def chequearUsuariosMaestro(usuarios):
 	try:
 		archUsuariosMaestro = open("usuariosMaestro.csv", "r")
-		print("\n\n[INFO] No se han unificado los usuarios ya que un archivo maestro fue encontrado en el sistema.")
+		print("\n\n\n [INFO] No se han unificado los usuarios ya que un archivo maestro fue encontrado en el sistema.")
 	except FileNotFoundError:
 		archUsuariosMaestro = unificarUsuarios()
-		print("\n\n[INFO] Se han detectado 4 archivos de usuarios, los cuales fueron mezclados por DNI en un único archivo maestro.")
+		print("\n\n\n [INFO] Se han detectado 4 archivos de usuarios, los cuales fueron mezclados por DNI en un único archivo maestro.")
 	cargarUsuarios(usuarios, archUsuariosMaestro)
 
 def unificarUsuarios():
@@ -46,7 +46,7 @@ def unificarUsuarios():
 		elif menor == int(listaU3[2]):
 			usuarios.write("{},{},{},{}\n".format(listaU3[0], listaU3[1], listaU3[2], listaU3[3]))
 			listaU3 = leer(usuarios3, fin)
-		while menor == int(listaU4[2]):
+		elif menor == int(listaU4[2]):
 			usuarios.write("{},{},{},{}\n".format(listaU4[0], listaU4[1], listaU4[2], listaU4[3]))
 			listaU4 = leer(usuarios4, fin)
 	usuarios1.close()
