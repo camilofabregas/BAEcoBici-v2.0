@@ -3,13 +3,14 @@ import random
 import csv
 
 def cargarArchivos():
-	usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados = dict(), dict(), dict(), dict(), dict()
+	usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados, robosBicicletas = dict(), dict(), dict(), dict(), dict(), dict()
 	chequearUsuariosMaestro(usuarios)
 	cargarEstaciones(estaciones)
 	cargarBicicletas(bicicletas)
+	cargarRobosBicicletas(robosBicicletas)
 	repartirBicicletasEstacion(estaciones, bicicletas)
 	cargarViajesEnCurso(viajesEnCurso)
-	return usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados
+	return usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados, robosBicicletas
 
 def chequearUsuariosMaestro(usuarios):
 	try:
@@ -123,6 +124,20 @@ def cargarViajesEnCurso(viajesEnCurso):
 			return viajesEnCurso
 	except FileNotFoundError:
 		return viajesEnCurso
+
+def cargarRobosBicicletas(robosBicicletas):
+	try:
+		with open("robosBicicletas.bin", "rb") as arch:
+			seguir = True
+			while seguir:
+				try:
+					robo = pickle.load(arch)
+					robosBicicletas[robo[0]] = [robo[1], robo[2]]
+				except EOFError:
+					seguir = False
+			return robosBicicletas
+	except FileNotFoundError:
+		return robosBicicletas
 
 def leer(archivo, fin):
 	linea = archivo.readline()
