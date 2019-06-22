@@ -1,21 +1,50 @@
 def imprimirMenuPrincipal():
-	print("\n\n***** MENU PRINCIPAL *****")
-	print("1. Usuarios")#\n**** a. Listado\n**** b. Alta\n**** c. Modificación\n**** d. Desbloquear")
-	print("2. Retiros automáticos")#\n**** a. Viaje aleatorio\n**** b. Viajes aleatorios múltiples")
-	print("3. Informes")#\n**** a. Usuarios con mayor cantidad de viajes\n**** b. Usuarios con mayor duración acumulada de viajes\n**** c. Bicicletas en reparación\n**** d. Estaciones más activas")
-	print("4. Ingresar al sistema")
-	print("5. Salir del programa")
+	print(" **************************************")
+	print(" *********** MENU PRINCIPAL ***********")
+	print(" **************************************")
+	print(" ***                                ***")
+	print(" ***  1. Usuarios                   ***")
+	print(" ***                                ***")
+	print(" ***  2. Retiros automáticos        ***")
+	print(" ***                                ***")
+	print(" ***  3. Informes                   ***")
+	print(" ***                                ***")
+	print(" ***  4. Ingresar al sistema        ***")
+	print(" ***                                ***")
+	print(" ***  5. Salir del programa         ***")
+	print(" ***                                ***")
+	print(" **************************************")
+	print(" **************************************\n")
 
 def imprimirLogo():
-	print("\n**************************************")
-	print("***                                ***")
-	print("***         BAEcoBici v1.0         ***")
-	print("***                                ***")
-	print("**************************************")
+	print("""\n\n     %%%%%%%%%%%%        %%%%%          &%%%%%%%%%%%                           &%%%           %%%%%             %%%%%  
+    %%%%%%%%%%%%%%%     %%%%%%%         &%%%%%%%%%%%                           &%%%            %%%               %%%   
+    %%%%%%%%%%%%%%%%   %%%%%%%%%        &%%%            %%%%%&      %%%%%%@    &%%% @%%%%%     %%%     @%%%%%@   &%%   
+    %%%%%%%%%%%%%%%   %%%%%%%%%%%       &%%%         &%%%%%%%%%%  %%%%%%%%%%%  &%%%%%%%%%%%%  &%%%   %%%%%%%%%%  %%%%  
+    %%%%%%%%%%%%%%%  %%%%%%%%%%%%%      &%%%%%%%%%% &%%%        @%%%%     %%%% &%%%%     %%%% &%%%  %%%%         %%%%  
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     &%%%        %%%         %%%%       %%% &%%%      &%%% &%%%  %%%          %%%%  
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%    &%%%         %%%      @  %%%%     %%%% &%%%%     %%%% &%%%  %%%%     @   %%%%  
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   &%%%%%%%%%%%  %%%%%%%%%%  %%%%%%%%%%%  &%%%%%%%%%%%%  &%%%   %%%%%%%%%%  %%%%  
+      %%%%%%%%%%   %%%           %%%     %%%%%%%%%%     %%%%%        %%%%%      %%   %%%%%      %       %%%%%     %% """)
 
 def imprimirSubmenuElegido(opcionElegida):
 	if opcionElegida == 1:
-		print("\n\n**** USUARIOS ****\n    1. Listado\n    2. Alta\n    3. Modificación\n    4. Desbloquear\n    5. Volver al menu principal")
+		print("\n\n **************************************")
+		print(" ************** USUARIOS **************")
+		print(" **************************************")
+		print(" ***                                ***")
+		print(" ***  1. Listado                    ***")
+		print(" ***                                ***")
+		print(" ***  2. Alta                       ***")
+		print(" ***                                ***")
+		print(" ***  3. Modifica                   ***")
+		print(" ***                                ***")
+		print(" ***  4. Desbloquear                ***")
+		print(" ***                                ***")
+		print(" ***  5. Volver al menu principal   ***")
+		print(" ***                                ***")
+		print(" **************************************")
+		print(" **************************************\n")
 	elif opcionElegida == 2:
 		print("\n\n**** RETIROS AUTOMÁTICOS ****\n    1. Viaje aleatorio\n    2. Viajes aleatorios múltiples\n    3. Volver al menu principal")
 	elif opcionElegida == 3:
@@ -34,4 +63,5 @@ def imprimirMenuUsuario():
 	print("1. Modificar PIN")
 	print("2. Retirar bicicleta")
 	print("3. Devolver bicicleta")
-	print("4. Volver al menu principal")
+	print("4. Robar bicicleta")
+	print("5. Volver al menu principal")
