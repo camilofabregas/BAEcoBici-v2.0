@@ -10,9 +10,9 @@ import os
 def main():
 	limpiarPantalla()
 	imprimirLogo() # En el módulo menuYSubmenus
-	usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados = cargarArchivos()
+	usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados, robosBicicletas = cargarArchivos()
 	simularViajesPendientes(estaciones, viajesEnCurso, usuarios, bicicletas, viajesFinalizados)
-	menuPrincipal(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados)
+	menuPrincipal(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados, robosBicicletas)
 
 def limpiarPantalla():
 	if os.name == "nt":
@@ -36,12 +36,12 @@ def simularViajesPendientes(estaciones, viajesEnCurso, usuarios, bicicletas, via
 	arch.close()
 	viajesEnCurso.clear()
 
-def menuPrincipal(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados):
+def menuPrincipal(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados, robosBicicletas):
 	opcionElegida = 0
 	while opcionElegida != 5:
 		imprimirMenuPrincipal() # En el módulo menuYSubmenus
 		opcionElegida = ingresarEntreRangos(1,5," [SOLICITUD] Ingrese el número de opción (1 a 5): ")
-		submenuElegido(opcionElegida, usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados)
+		submenuElegido(opcionElegida, usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados, robosBicicletas)
 
 def ingresarEntreRangos(inicio, fin, mensaje): #Para ingresar (y validar) una opción dentro de un rango especifico.
 	opcion = input(mensaje)
@@ -51,16 +51,16 @@ def ingresarEntreRangos(inicio, fin, mensaje): #Para ingresar (y validar) una op
 	limpiarPantalla()
 	return int(opcion)
 
-def submenuElegido(opcionElegida, usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados): # Genera el submenu de la opción que elegí en el menu principal
+def submenuElegido(opcionElegida, usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados, robosBicicletas): # Genera el submenu de la opción que elegí en el menu principal
 	if opcionElegida != 4 and opcionElegida != 5: # Si no es ni "Salir del programa" ni "Ingresar al sistema"
 		rangoSubmenuElegido = calcularRangoSubmenuElegido(opcionElegida)
 		opcionSubmenu = 0
 		while opcionSubmenu != rangoSubmenuElegido:
 			imprimirSubmenuElegido(opcionElegida) # En el módulo menuYSubmenus
 			opcionSubmenu = ingresarEntreRangos(1,rangoSubmenuElegido,"[SOLICITUD] Ingrese el número de opción (1 a {}): ".format(rangoSubmenuElegido))
-			invocarFuncionSubmenuElegido(opcionElegida, opcionSubmenu, usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados)
+			invocarFuncionSubmenuElegido(opcionElegida, opcionSubmenu, usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados, robosBicicletas)
 	elif opcionElegida == 4:
-		menuUsuario(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados)
+		menuUsuario(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados, robosBicicletas)
 
 def calcularRangoSubmenuElegido(opcionElegida):
 	if opcionElegida == 1:
@@ -70,7 +70,7 @@ def calcularRangoSubmenuElegido(opcionElegida):
 	elif opcionElegida == 3:
 		return 6
 
-def invocarFuncionSubmenuElegido(opcionElegida, opcionSubmenu, usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados):
+def invocarFuncionSubmenuElegido(opcionElegida, opcionSubmenu, usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados, robosBicicletas):
 	if opcionElegida == 1 and opcionSubmenu == 1:
 		listado(usuarios)
 	elif opcionElegida == 1 and opcionSubmenu == 2:
@@ -92,7 +92,7 @@ def invocarFuncionSubmenuElegido(opcionElegida, opcionSubmenu, usuarios, bicicle
 	elif opcionElegida == 3 and opcionSubmenu == 4:
 		estacionesMasActivas(estaciones, viajesFinalizados) # En el módulo informes
 	elif opcionElegida == 3 and opcionSubmenu == 5:
-		viajesRobados()
+		viajesRobados(robosBicicletas)
 		
 def cargarDatos(usuarios, bicicletas, estaciones, tipoDeCarga):
 	generarUsuarios(usuarios) # En el módulo generarEstructuras
@@ -299,14 +299,14 @@ def calcularHoraLlegada(horarioSalida, duracionViaje):
 		horaLlegada +=1
 	return (horaLlegada, minLlegada, segLlegada)
 
-def menuUsuario(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados):
+def menuUsuario(usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados, robosBicicletas):
 	dni, pin = iniciarSesion(usuarios)
 	if dni != 0:
 		opcionElegida = 0
 		while opcionElegida != 5:
 			imprimirMenuUsuario()
 			opcionElegida = ingresarEntreRangos(1,5,"[SOLICITUD] Ingrese el número de opción (1 a 5): ")
-			submenuUsuario(usuarios, bicicletas, estaciones, opcionElegida, dni, pin, viajesEnCurso, viajesFinalizados)
+			submenuUsuario(usuarios, bicicletas, estaciones, opcionElegida, dni, pin, viajesEnCurso, viajesFinalizados, robosBicicletas)
 
 def iniciarSesion(usuarios):
 	print("\n\n**** INICIAR SESIÓN ****")
@@ -327,7 +327,7 @@ def iniciarSesion(usuarios):
 		print("\n[ERROR] No hay una cuenta registrada con ese DNI, volviendo al menu principal...")
 		return 0, 0
 
-def submenuUsuario(usuarios, bicicletas, estaciones, opcionElegida, dni, pin, viajesEnCurso, viajesFinalizados):
+def submenuUsuario(usuarios, bicicletas, estaciones, opcionElegida, dni, pin, viajesEnCurso, viajesFinalizados, robosBicicletas):
 	if opcionElegida == 1:
 		cambiarPin(usuarios, dni, pin)
 	elif opcionElegida == 2:
@@ -335,7 +335,7 @@ def submenuUsuario(usuarios, bicicletas, estaciones, opcionElegida, dni, pin, vi
 	elif opcionElegida == 3:
 		devolverBicicleta(estaciones, dni, viajesEnCurso, usuarios, bicicletas, viajesFinalizados)
 	elif opcionElegida == 4:
-		robarBicicleta()
+		robarBicicleta(viajesEnCurso, usuarios, bicicletas, dni, robosBicicletas)
 
 def cambiarPin(usuarios, dni, pinViejo):
 	if usuarios[dni][0] != "":
@@ -469,7 +469,71 @@ def horarios (horaMinimo, minutosMinimo, segundosMinimo, horaMaximo, minutosMaxi
 	segundos = random.randrange(segundosMinimo, segundosMaximo)
 	return (horas, minutos, segundos)
 
-def robarBicicleta():
-	print("ROBAR BICICLETA")
+def robarBicicleta(viajesEnCurso, usuarios, bicicletas, dni, robosBicicletas):
+	print('**** ROBAR BICICLETA ****\n')
+	if dni in viajesEnCurso:
+		limpiarPantalla()
+		print('\n[ERROR] No puede robar una bicicleta mientras esté usando una. Volviendo al menú anterior...\n')
+	else:
+		idBicicletaParaRobar = int(solicitarValidarDigitos(4, 4, '\n[SOLICITUD] Ingrese el número de bicicleta que desea robar: '))
+		while idBicicletaParaRobar not in bicicletas:
+			idBicicletaParaRobar = int(solicitarValidarDigitos(4, 4, '\n[ERROR] La bicicleta que intenta robar no existe. Ingrese una válida: '))
+		verificarBicicletaEnViaje(viajesEnCurso, idBicicletaParaRobar, usuarios, dni, robosBicicletas, bicicletas)
 
+def verificarBicicletaEnViaje(viajesEnCurso, idBicicletaParaRobar, usuarios, dni, robosBicicletas, bicicletas):
+	bicicletaYaRobada = verificarBicicletaYaRobada(robosBicicletas, viajesEnCurso, idBicicletaParaRobar, bicicletas)
+	if bicicletaYaRobada:
+		limpiarPantalla()
+		print('[INFO] La bicicleta que intenta robar ya fue robada durante el viaje. Volviendo al menú anterior...')
+	else:
+		if bicicletas[idBicicletaParaRobar][1] == "En circulacion":		
+			asignarBicicletaAlLadron(viajesEnCurso, robosBicicletas, usuarios, dni, idBicicletaParaRobar)
+		else:
+			usuarios[dni][0] = ""
+			limpiarPantalla()
+			print("[INFO] La bicicleta que intentó robar está anclada a una estación. Su usuario ha sido bloqueado.\n")			
+
+def verificarBicicletaYaRobada(robosBicicletas, viajesEnCurso, idBicicletaParaRobar, bicicletas): #Se fija si la bicicleta que se quiere robar, ya fue robada durante el mismo viaje.
+	if bicicletas[idBicicletaParaRobar][1] == "En circulacion": #Se fija si la bici esta en viaje.
+		for dniLadron in robosBicicletas:
+			if idBicicletaParaRobar in robosBicicletas[dniLadron][1]: #Se fija si fue robada
+				for dniEnCurso in viajesEnCurso:
+					if dniEnCurso ==  dniLadron: #Se fija si el ladron sigue usando la bici que robo
+						return True
+	else:
+		return False
+
+def asignarBicicletaAlLadron(viajesEnCurso, robosBicicletas, usuarios, dni, idBicicletaParaRobar):
+	for dniEnCurso in viajesEnCurso.copy():
+		if viajesEnCurso[dniEnCurso][0] == idBicicletaParaRobar:
+			guardarRobo(robosBicicletas, dni, idBicicletaParaRobar, usuarios, dniEnCurso)
+			viajesEnCurso[dni] = viajesEnCurso.pop(dniEnCurso) #Cambio el dni anterior por el del ladrón. Pero el resto de los datos quedan iguales.
+			grabarEnViajesEnCurso(dni, viajesEnCurso[dni][0], viajesEnCurso[dni][1], viajesEnCurso[dni][2])
+	
+
+def guardarRobo(robosBicicletas, dni, idBicicletaParaRobar, usuarios, dniEnCurso):
+	if dni not in robosBicicletas:
+		robosBicicletas[dni] = [usuarios[dni][1], []] #Al dic le agrego dni, nombre del ladrón y una lista con las bicis que robó.
+		robosBicicletas[dni][1].append(idBicicletaParaRobar)
+		grabarEnRobosBicicletas(robosBicicletas, dni, idBicicletaParaRobar)
+		print('[INFO] {} le robó la bicicleta {} a {}.\n'.format(usuarios[dni][1], idBicicletaParaRobar, usuarios[dniEnCurso][1]))
+	else:
+		robosBicicletas[dni][1].append(idBicicletaParaRobar)
+		grabarEnRobosBicicletas(robosBicicletas, dni, idBicicletaParaRobar)
+		print('[INFO] {} le robó la bicicleta {} a {}.\n'.format(usuarios[dni][1], idBicicletaParaRobar, usuarios[dniEnCurso][1]))		
+	return robosBicicletas
+
+def viajesRobados(robosBicicletas):
+	print('\n**** ROBO DE BICICLETAS ****\n')
+	indice = 0
+	for dniLadron in robosBicicletas:
+		indice += 1
+		print('{}. {}, {}. Cantidad de robos: {}'.format(indice, dniLadron, robosBicicletas[dniLadron][0], len(robosBicicletas[dniLadron][1])))
+
+def grabarEnRobosBicicletas(robosBicicletas, dni, idBicicletaParaRobar):
+	with open("robosBicicletas.bin", "ab") as arch:
+		pkl = pickle.Pickler(arch)
+		robo = []
+		robo = [dni, robosBicicletas[dni][0], robosBicicletas[dni][1]]
+		pkl.dump(robo)
 main()
