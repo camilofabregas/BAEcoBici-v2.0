@@ -1,24 +1,15 @@
-from datetime import *
+import random
+from datetime import time
 
-def cargarViajesFinalizados (viajesFinalizados):
-	fin = ["","","","","","", 9999999999999999]
-	archivoViajes = open("viajes.csv","r", encoding = "utf-8")
-	next(archivoViajes)
-	viaje = leer(archivoViajes, fin)
-	while int(viaje[6]) != fin[6]:
-		horarioSalida = int(viaje[3][0:2]), int(viaje[3][3:5]), int(viaje[3][6:])
-		horarioLlegada = int(viaje[5][0:2]), int(viaje[5][3:5]), int(viaje[5][6:])
-		acumularViajes(int(viaje[2]), viajesFinalizados, int(viaje[6]), int(viaje[0]), int(viaje[1]), horarioSalida, horarioLlegada)
-		viaje = leer(archivoViajes, fin)
-	archivoViajes.close()
-
-def acumularViajes(usuario, viajesFinalizados, bicicletaAsignada, estacionRetirar, estacionDevolver, horarioSalida, horarioLlegada):
-	horaSalida, minSalida, segSalida = horarioSalida
-	horaLlegada, minLlegada, segLlegada = horarioLlegada
-	if usuario not in viajesFinalizados:
-		viajesFinalizados[usuario] = [(bicicletaAsignada, estacionRetirar, time(horaSalida, minSalida, segSalida), estacionDevolver, time(horaLlegada, minLlegada, segLlegada))]
-	else:
-		viajesFinalizados[usuario].append((bicicletaAsignada, estacionRetirar, time(horaSalida, minSalida, segSalida), estacionDevolver, time(horaLlegada, minLlegada, segLlegada)))
+def topUsuariosCantidadViajes(usuarios, viajesFinalizados):
+	top = {}
+	for dni in viajesFinalizados:
+		if len(top) <= 10:
+			top[usuarios[dni][1]] = len(viajesFinalizados[dni])
+	print("**** TOP 10 USUARIOS CON MAYOR CANTIDAD DE VIAJES ****")
+	topOrdenado = sorted(top.items(), key = lambda x:x[1], reverse = True)
+	for usuarios in topOrdenado:
+		print("El usuario {} con {} viajes.".format(usuarios[0], usuarios[1]))
 
 def topUsuariosDuracionViajes(viajesFinalizados):
 	usuariosMasDuracion = {}
@@ -73,12 +64,29 @@ def topUsuariosDuracionViajes(viajesFinalizados):
 		#print(contador,"El usuario {} con {} hs de viaje.".format(usuarios[0], usuarios[1]))
 		contador +=1
 
-def leer(archivo, fin):
-	linea = archivo.readline()
-	lista = linea.rstrip().split(",")
-	return lista if linea else fin
+def bicicletasEnReparacion (bicicletas):
+	bicisEnReparacion = []
+	for bicicleta in bicicletas:
+		if bicicletas[bicicleta][0] == "Necesita reparación":
+			bicisEnReparacion.append(bicicleta)
+	random.shuffle(bicisEnReparacion)
+	print("\n**** DEPÓSITO DE BICICLETAS ****")
+	for bicicleta in bicisEnReparacion:
+		print("[INFO] La bicicleta {} necesita reparacion.".format(bicicleta))
 
-viajesFinalizados = {}
-cargarViajesFinalizados(viajesFinalizados)
-topUsuariosDuracionViajes(viajesFinalizados)
-#print(viajesFinalizados)
+def estacionesMasActivas(estaciones, viajesFinalizados):
+	top = {}
+	for dni in viajesFinalizados:
+		for viajes in viajesFinalizados[dni]:
+			if estaciones[viajesFinalizados[dni][viajesFinalizados[dni].index(viajes)][1]]["Dirección"] not in top:
+				top[estaciones[viajesFinalizados[dni][viajesFinalizados[dni].index(viajes)][1]]["Dirección"]] = 1
+			else:
+				top[estaciones[viajesFinalizados[dni][viajesFinalizados[dni].index(viajes)][1]]["Dirección"]] += 1
+			if estaciones[viajesFinalizados[dni][viajesFinalizados[dni].index(viajes)][3]]["Dirección"] not in top:
+				top[estaciones[viajesFinalizados[dni][viajesFinalizados[dni].index(viajes)][3]]["Dirección"]] = 1
+			else:
+				top[estaciones[viajesFinalizados[dni][viajesFinalizados[dni].index(viajes)][3]]["Dirección"]] += 1
+	print("\n**** ESTACIONES MÁS ACTIVAS ****")
+	topOrdenado = sorted(top.items(), key = lambda x:x[1], reverse = True)
+	for estaciones in topOrdenado:
+		print("Estacion {} con {} retiros y devoluciones.".format(estaciones[0], estaciones[1]))
