@@ -397,7 +397,7 @@ def asignarBicicleta(estaciones, bicicletas, viajesEnCurso, idEstacion, dni, rob
 	horarioSalida = time(horas, minutos, segundos)
 	bicicletas[bicicletaRetirada] = ["En condiciones", "En circulacion"]
 	viajesEnCurso[dni] = [bicicletaRetirada, idEstacion, horarioSalida]
-	grabarRobosYViajesEnCurso("viajesEnCurso.bin", robosBicicletas, dni, '', bicicletaRetirada, idEstacion, horarioSalida)
+	grabarEnArchivoBinario("viajesEnCurso.bin", robosBicicletas, dni, '', bicicletaRetirada, idEstacion, horarioSalida)
 
 def devolverBicicleta(estaciones, dni, viajesEnCurso, usuarios, bicicletas, viajesFinalizados):
     if dni not in viajesEnCurso:
@@ -502,22 +502,22 @@ def asignarBicicletaAlLadron(viajesEnCurso, robosBicicletas, usuarios, dni, idBi
 			guardarRobo(robosBicicletas, dni, idBicicletaParaRobar, usuarios, dniEnCurso, viajesEnCurso)
 			borrarViajeRobado(dniEnCurso, dni, viajesEnCurso)
 			viajesEnCurso[dni] = viajesEnCurso.pop(dniEnCurso) #Cambio el dni anterior por el del ladrón. Pero el resto de los datos quedan iguales.
-			grabarRobosYViajesEnCurso("viajesEnCurso.bin", robosBicicletas, dni, idBicicletaParaRobar, viajesEnCurso[dni][0], viajesEnCurso[dni][1], viajesEnCurso[dni][2])
+			grabarEnArchivoBinario("viajesEnCurso.bin", robosBicicletas, dni, idBicicletaParaRobar, viajesEnCurso[dni][0], viajesEnCurso[dni][1], viajesEnCurso[dni][2])
 			print(viajesEnCurso)	
 
 def guardarRobo(robosBicicletas, dni, idBicicletaParaRobar, usuarios, dniEnCurso, viajesEnCurso):
 	if dni not in robosBicicletas:
 		robosBicicletas[dni] = [usuarios[dni][1], []] #Al dic le agrego dni, nombre del ladrón y una lista con las bicis que robó.
 		robosBicicletas[dni][1].append(idBicicletaParaRobar)
-		grabarRobosYViajesEnCurso("robosBicicletas.bin", robosBicicletas, dni, idBicicletaParaRobar, '', '', '')
+		grabarEnArchivoBinario("robosBicicletas.bin", robosBicicletas, dni, idBicicletaParaRobar, '', '', '')
 		print('[INFO] {} le robó la bicicleta {} a {}.\n'.format(usuarios[dni][1], idBicicletaParaRobar, usuarios[dniEnCurso][1]))
 	else:
 		robosBicicletas[dni][1].append(idBicicletaParaRobar)
-		grabarRobosYViajesEnCurso("robosBicicletas.bin", robosBicicletas, dni, idBicicletaParaRobar, '', '', '')
+		grabarEnArchivoBinario("robosBicicletas.bin", robosBicicletas, dni, idBicicletaParaRobar, '', '', '')
 		print('[INFO] {} le robó la bicicleta {} a {}.\n'.format(usuarios[dni][1], idBicicletaParaRobar, usuarios[dniEnCurso][1]))		
 	return robosBicicletas
 
-def grabarRobosYViajesEnCurso(ruta, robosBicicletas, dni, idBicicletaParaRobar, bicicletaRetirada, idEstacion, horarioSalida):
+def grabarEnArchivoBinario(ruta, robosBicicletas, dni, idBicicletaParaRobar, bicicletaRetirada, idEstacion, horarioSalida):
 	with open(ruta, "ab") as arch:
 		pkl = pickle.Pickler(arch)
 		dic = []
