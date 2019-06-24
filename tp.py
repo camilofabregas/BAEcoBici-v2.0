@@ -564,13 +564,6 @@ def guardarRobo(robosBicicletas, dni, idBicicletaParaRobar, usuarios, dniEnCurso
 		print('[INFO] {} le robó la bicicleta {} a {}.\n'.format(usuarios[dni][1], idBicicletaParaRobar, usuarios[dniEnCurso][1]))		
 	return robosBicicletas
 
-def viajesRobados(robosBicicletas):
-	print('\n**** ROBO DE BICICLETAS ****\n')
-	indice = 0
-	for dniLadron in robosBicicletas:
-		indice += 1
-		print('{}. {}, {}. Cantidad de robos: {}'.format(indice, dniLadron, robosBicicletas[dniLadron][0], len(robosBicicletas[dniLadron][1])))
-
 def grabarEnRobosBicicletas(robosBicicletas, dni, idBicicletaParaRobar):
 	with open("robosBicicletas.bin", "ab") as arch:
 		pkl = pickle.Pickler(arch)
