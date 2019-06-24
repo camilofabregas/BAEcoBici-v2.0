@@ -1,3 +1,4 @@
+from datetime import *
 import pickle
 import random
 import csv
@@ -138,6 +139,26 @@ def cargarRobosBicicletas(robosBicicletas):
 			return robosBicicletas
 	except FileNotFoundError:
 		return robosBicicletas
+
+def cargarViajesFinalizados (viajesFinalizados):
+	fin = ["","","","","","", 9999999999999999]
+	archivoViajes = open("viajes.csv","r", encoding = "utf-8")
+	next(archivoViajes)
+	viaje = leer(archivoViajes, fin)
+	while int(viaje[6]) != fin[6]:
+		horarioSalida = int(viaje[3][0:2]), int(viaje[3][3:5]), int(viaje[3][6:])
+		horarioLlegada = int(viaje[5][0:2]), int(viaje[5][3:5]), int(viaje[5][6:])
+		acumularViajes(int(viaje[2]), viajesFinalizados, int(viaje[6]), int(viaje[0]), int(viaje[1]), horarioSalida, horarioLlegada)
+		viaje = leer(archivoViajes, fin)
+	archivoViajes.close()
+
+def acumularViajes(usuario, viajesFinalizados, bicicletaAsignada, estacionRetirar, estacionDevolver, horarioSalida, horarioLlegada):
+	horaSalida, minSalida, segSalida = horarioSalida
+	horaLlegada, minLlegada, segLlegada = horarioLlegada
+	if usuario not in viajesFinalizados:
+		viajesFinalizados[usuario] = [(bicicletaAsignada, estacionRetirar, time(horaSalida, minSalida, segSalida), estacionDevolver, time(horaLlegada, minLlegada, segLlegada))]
+	else:
+		viajesFinalizados[usuario].append((bicicletaAsignada, estacionRetirar, time(horaSalida, minSalida, segSalida), estacionDevolver, time(horaLlegada, minLlegada, segLlegada)))
 
 def leer(archivo, fin):
 	linea = archivo.readline()
