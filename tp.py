@@ -277,6 +277,7 @@ def acumularViajes(usuario, viajesFinalizados, bicicletaAsignada, estacionRetira
 		viajesFinalizados[usuario] = [(bicicletaAsignada, estacionRetirar, time(horaSalida, minSalida, segSalida), estacionDevolver, time(horaLlegada, minLlegada, segLlegada))]
 	else:
 		viajesFinalizados[usuario].append((bicicletaAsignada, estacionRetirar, time(horaSalida, minSalida, segSalida), estacionDevolver, time(horaLlegada, minLlegada, segLlegada)))
+	grabarEnViajesFinalizados(usuario, bicicletaAsignada, estacionRetirar, estacionDevolver, horarioSalida, horarioLlegada)
 
 def viajesAleatoriosMultiples(usuarios, bicicletas, estaciones, usuariosEnViaje, viajesFinalizados):
 	cantidad = ingresarEntreRangos(1, 100, "\n[SOLICITUD] Ingrese entre 1 y 100 la cantidad de viajes aleatorios que desea generar: ")
@@ -510,7 +511,46 @@ def asignarBicicletaAlLadron(viajesEnCurso, robosBicicletas, usuarios, dni, idBi
 			borrarViajeRobado(dniEnCurso, dni, viajesEnCurso)
 			viajesEnCurso[dni] = viajesEnCurso.pop(dniEnCurso) #Cambio el dni anterior por el del ladrón. Pero el resto de los datos quedan iguales.
 			grabarEnViajesEnCurso(dni, viajesEnCurso[dni][0], viajesEnCurso[dni][1], viajesEnCurso[dni][2])
+
+def grabarEnViajesFinalizados(usuario, bicicletaAsignada, estacionRetirar, estacionDevolver, horarioSalida, horarioLlegada):
+	viajes = open("viajes.csv", "a")
+	sal = []
+	lleg = []
+	for numero in range(len(horarioSalida)):
+		if horarioSalida[numero] < 10:
+			sal.append("0"+str(horarioSalida[numero]))
+		else:
+			sal.append(horarioSalida[numero])
+	for numero in range(len(horarioLlegada)):
+		if horarioLlegada[numero] < 10:
+			lleg.append("0"+str(horarioLlegada[numero]))
+		else:
+			lleg.append(horarioLlegada[numero])
+
+	salida = "{}:{}:{}".format(sal[0],sal[1],sal[2])
+	llegada = "{}:{}:{}".format(lleg[0],lleg[1],lleg[2])
 	
+	acumuladorSalida = (horarioSalida[0] * 3600) + (horarioSalida[1] * 60) + horarioSalida[2]
+	if time(horarioSalida[0],horarioSalida[1],horarioSalida[2]) <= time(horarioLlegada[0],horarioLlegada[1],horarioLlegada[2]):
+		acumuladorLlegada = (horarioLlegada[0] * 3600) + (horarioLlegada[1] * 60) + horarioLlegada[2]
+	else:
+		acumuladorLlegada = ((horarioLlegada[0] + 24) * 3600) + (horarioLlegada[1] * 60) + horarioLlegada[2]
+	diferencia = acumuladorLlegada - acumuladorSalida
+	diferenciaSegundos = diferencia % 60
+	if diferenciaSegundos < 10:
+		diferenciaSegundos = "0" + str(diferenciaSegundos)
+	diferenciaMinutos = diferencia // 60
+	if diferenciaMinutos >= 60:
+		diferenciaHora = "0" + str(diferenciaMinutos // 60)
+		diferenciaMinutos = diferenciaMinutos % 60
+		if diferenciaMinutos < 10:
+			diferenciaMinutos = "0" + str(diferenciaMinutos)
+	else:
+		diferenciaHora = "00"
+	duracionViaje = "{}:{}:{}".format(diferenciaHora, diferenciaMinutos, diferenciaSegundos)
+
+	viajes.write("{},{},{},{},{},{},{}\n".format(estacionRetirar,estacionDevolver,usuario,salida,duracionViaje,llegada,bicicletaAsignada))
+	viajes.close()			
 
 def guardarRobo(robosBicicletas, dni, idBicicletaParaRobar, usuarios, dniEnCurso):
 	if dni not in robosBicicletas:
