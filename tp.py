@@ -277,7 +277,6 @@ def acumularViajes(usuario, viajesFinalizados, bicicletaAsignada, estacionRetira
 		viajesFinalizados[usuario] = [(bicicletaAsignada, estacionRetirar, time(horaSalida, minSalida, segSalida), estacionDevolver, time(horaLlegada, minLlegada, segLlegada))]
 	else:
 		viajesFinalizados[usuario].append((bicicletaAsignada, estacionRetirar, time(horaSalida, minSalida, segSalida), estacionDevolver, time(horaLlegada, minLlegada, segLlegada)))
-	grabarEnViajesFinalizados(usuario, bicicletaAsignada, estacionRetirar, estacionDevolver, horarioSalida, horarioLlegada)
 
 def viajesAleatoriosMultiples(usuarios, bicicletas, estaciones, usuariosEnViaje, viajesFinalizados):
 	cantidad = ingresarEntreRangos(1, 100, "\n[SOLICITUD] Ingrese entre 1 y 100 la cantidad de viajes aleatorios que desea generar: ")
@@ -332,7 +331,7 @@ def submenuUsuario(usuarios, bicicletas, estaciones, opcionElegida, dni, pin, vi
 	if opcionElegida == 1:
 		cambiarPin(usuarios, dni, pin)
 	elif opcionElegida == 2:
-		retirarBicicleta(usuarios, bicicletas, estaciones, dni, viajesEnCurso)
+		retirarBicicleta(usuarios, bicicletas, estaciones, dni, viajesEnCurso, robosBicicletas)
 	elif opcionElegida == 3:
 		devolverBicicleta(estaciones, dni, viajesEnCurso, usuarios, bicicletas, viajesFinalizados)
 	elif opcionElegida == 4:
@@ -357,7 +356,7 @@ def cambiarPin(usuarios, dni, pinViejo):
 		limpiarPantalla()
 		print("\n[ERROR] Su usuario se encuentra bloqueado. Volviendo al menu de usuario...")
 
-def retirarBicicleta (usuarios, bicicletas, estaciones, dni, viajesEnCurso): # Verifica que el usuario no esté en viaje ni bloqueado y pide el PIN.
+def retirarBicicleta (usuarios, bicicletas, estaciones, dni, viajesEnCurso, robosBicicletas): # Verifica que el usuario no esté en viaje ni bloqueado y pide el PIN.
 	if dni in viajesEnCurso or usuarios[dni][0] == "":
 		print("\n[ERROR] El usuario {} está bloqueado o actualmente se encuentra en viaje.".format(usuarios[dni][0]))
 	else:
@@ -372,9 +371,9 @@ def retirarBicicleta (usuarios, bicicletas, estaciones, dni, viajesEnCurso): # V
 				limpiarPantalla()
 				print ("\n[INFO] El usuario {} fue bloqueado porque excedió la cantidad de intentos permitidos.".format(usuarios[dni][1]))
 				return None
-		elegirEstacionParaRetirar(estaciones, bicicletas, viajesEnCurso, dni)
+		elegirEstacionParaRetirar(estaciones, bicicletas, viajesEnCurso, dni, robosBicicletas)
 
-def elegirEstacionParaRetirar(estaciones, bicicletas, viajesEnCurso, dni):
+def elegirEstacionParaRetirar(estaciones, bicicletas, viajesEnCurso, dni, robosBicicletas):
 	print("\n**** ESTACIONES ****")
 	for estacion in estaciones:
 		print("Estación {}: {}".format(estacion, estaciones[estacion]["Dirección"]))
@@ -382,9 +381,9 @@ def elegirEstacionParaRetirar(estaciones, bicicletas, viajesEnCurso, dni):
 	while idEstacion not in estaciones or len(estaciones[idEstacion]["Bicicletas"]) == 0:
 		print("\n[ERROR] El número de estación ingresado es inválido o la estación se encuentra sin bicicletas.")
 		idEstacion = int(solicitarValidarDigitos(1, len(estaciones), "[SOLICITUD] Ingrese el numero de identificacion de la estacion donde desea retirar la bicicleta: "))
-	asignarBicicleta(estaciones, bicicletas, viajesEnCurso, idEstacion, dni)
+	asignarBicicleta(estaciones, bicicletas, viajesEnCurso, idEstacion, dni, robosBicicletas)
 
-def asignarBicicleta(estaciones, bicicletas, viajesEnCurso, idEstacion, dni):
+def asignarBicicleta(estaciones, bicicletas, viajesEnCurso, idEstacion, dni, robosBicicletas):
 	anclajeParaRetirar = random.randrange(1,len(estaciones[idEstacion]["Bicicletas"]))
 	while estaciones[idEstacion]["Bicicletas"][anclajeParaRetirar] == "":
 		anclajeParaRetirar = random.randrange(1,len(estaciones[idEstacion]["Bicicletas"]))
@@ -398,14 +397,7 @@ def asignarBicicleta(estaciones, bicicletas, viajesEnCurso, idEstacion, dni):
 	horarioSalida = time(horas, minutos, segundos)
 	bicicletas[bicicletaRetirada] = ["En condiciones", "En circulacion"]
 	viajesEnCurso[dni] = [bicicletaRetirada, idEstacion, horarioSalida]
-	grabarEnViajesEnCurso(dni, bicicletaRetirada, idEstacion, horarioSalida)
-
-def grabarEnViajesEnCurso(dni, bicicletaRetirada, idEstacion, horarioSalida):
-	with open("viajesEnCurso.bin", "ab") as arch:
-		pkl = pickle.Pickler(arch)
-		viaje = []
-		viaje = [dni, bicicletaRetirada, idEstacion, horarioSalida]
-		pkl.dump(viaje)
+	grabarRobosYViajesEnCurso("viajesEnCurso.bin", robosBicicletas, dni, '', bicicletaRetirada, idEstacion, horarioSalida)
 
 def devolverBicicleta(estaciones, dni, viajesEnCurso, usuarios, bicicletas, viajesFinalizados):
     if dni not in viajesEnCurso:
@@ -507,10 +499,50 @@ def verificarBicicletaYaRobada(robosBicicletas, viajesEnCurso, idBicicletaParaRo
 def asignarBicicletaAlLadron(viajesEnCurso, robosBicicletas, usuarios, dni, idBicicletaParaRobar):
 	for dniEnCurso in viajesEnCurso.copy():
 		if viajesEnCurso[dniEnCurso][0] == idBicicletaParaRobar:
-			guardarRobo(robosBicicletas, dni, idBicicletaParaRobar, usuarios, dniEnCurso)
+			guardarRobo(robosBicicletas, dni, idBicicletaParaRobar, usuarios, dniEnCurso, viajesEnCurso)
 			borrarViajeRobado(dniEnCurso, dni, viajesEnCurso)
 			viajesEnCurso[dni] = viajesEnCurso.pop(dniEnCurso) #Cambio el dni anterior por el del ladrón. Pero el resto de los datos quedan iguales.
-			grabarEnViajesEnCurso(dni, viajesEnCurso[dni][0], viajesEnCurso[dni][1], viajesEnCurso[dni][2])
+			grabarRobosYViajesEnCurso("viajesEnCurso.bin", robosBicicletas, dni, idBicicletaParaRobar, viajesEnCurso[dni][0], viajesEnCurso[dni][1], viajesEnCurso[dni][2])
+			print(viajesEnCurso)	
+
+def guardarRobo(robosBicicletas, dni, idBicicletaParaRobar, usuarios, dniEnCurso, viajesEnCurso):
+	if dni not in robosBicicletas:
+		robosBicicletas[dni] = [usuarios[dni][1], []] #Al dic le agrego dni, nombre del ladrón y una lista con las bicis que robó.
+		robosBicicletas[dni][1].append(idBicicletaParaRobar)
+		grabarRobosYViajesEnCurso("robosBicicletas.bin", robosBicicletas, dni, idBicicletaParaRobar, '', '', '')
+		print('[INFO] {} le robó la bicicleta {} a {}.\n'.format(usuarios[dni][1], idBicicletaParaRobar, usuarios[dniEnCurso][1]))
+	else:
+		robosBicicletas[dni][1].append(idBicicletaParaRobar)
+		grabarRobosYViajesEnCurso("robosBicicletas.bin", robosBicicletas, dni, idBicicletaParaRobar, '', '', '')
+		print('[INFO] {} le robó la bicicleta {} a {}.\n'.format(usuarios[dni][1], idBicicletaParaRobar, usuarios[dniEnCurso][1]))		
+	return robosBicicletas
+
+def grabarRobosYViajesEnCurso(ruta, robosBicicletas, dni, idBicicletaParaRobar, bicicletaRetirada, idEstacion, horarioSalida):
+	with open(ruta, "ab") as arch:
+		pkl = pickle.Pickler(arch)
+		dic = []
+		if ruta == "robosBicicletas.bin":			
+			dic = [dni, robosBicicletas[dni][0], robosBicicletas[dni][1]]
+			pkl.dump(dic)
+		else:
+			dic = [dni, bicicletaRetirada, idEstacion, horarioSalida]
+			pkl.dump(dic)
+
+def borrarViajeRobado(dniEnCurso, dni, viajesEnCurso): #Borra el viaje que estaba en curso del usuario antes de que le roben la bici.
+	with open("viajesEnCurso.bin", "rb") as arch:
+		dicAux = {}
+		seguir = True
+		while seguir == True:
+			try:
+				dato = pickle.load(arch)
+				dicAux[dato[0]] = [dato[1], dato[2], dato[3]]
+			except EOFError:
+				seguir = False
+	del(dicAux[dniEnCurso])
+	arch = open("viajesEnCurso.bin", "wb") # Limpio (vacío) el archivo binario de viajesEnCurso.
+	arch.close()
+	for dni in dicAux:
+		grabarEnViajesEnCurso(dni, dicAux[dni][0], dicAux[dni][1], dicAux[dni][2]) #Lo vuelvo a cargar sin el viaje en curso anterior.
 
 def grabarEnViajesFinalizados(usuario, bicicletaAsignada, estacionRetirar, estacionDevolver, horarioSalida, horarioLlegada):
 	viajes = open("viajes.csv", "a")
@@ -550,40 +582,5 @@ def grabarEnViajesFinalizados(usuario, bicicletaAsignada, estacionRetirar, estac
 	duracionViaje = "{}:{}:{}".format(diferenciaHora, diferenciaMinutos, diferenciaSegundos)
 
 	viajes.write("{},{},{},{},{},{},{}\n".format(estacionRetirar,estacionDevolver,usuario,salida,duracionViaje,llegada,bicicletaAsignada))
-	viajes.close()			
-
-def guardarRobo(robosBicicletas, dni, idBicicletaParaRobar, usuarios, dniEnCurso):
-	if dni not in robosBicicletas:
-		robosBicicletas[dni] = [usuarios[dni][1], []] #Al dic le agrego dni, nombre del ladrón y una lista con las bicis que robó.
-		robosBicicletas[dni][1].append(idBicicletaParaRobar)
-		grabarEnRobosBicicletas(robosBicicletas, dni, idBicicletaParaRobar)
-		print('[INFO] {} le robó la bicicleta {} a {}.\n'.format(usuarios[dni][1], idBicicletaParaRobar, usuarios[dniEnCurso][1]))
-	else:
-		robosBicicletas[dni][1].append(idBicicletaParaRobar)
-		grabarEnRobosBicicletas(robosBicicletas, dni, idBicicletaParaRobar)
-		print('[INFO] {} le robó la bicicleta {} a {}.\n'.format(usuarios[dni][1], idBicicletaParaRobar, usuarios[dniEnCurso][1]))		
-	return robosBicicletas
-
-def grabarEnRobosBicicletas(robosBicicletas, dni, idBicicletaParaRobar):
-	with open("robosBicicletas.bin", "ab") as arch:
-		pkl = pickle.Pickler(arch)
-		robo = []
-		robo = [dni, robosBicicletas[dni][0], robosBicicletas[dni][1]]
-		pkl.dump(robo)
-
-def borrarViajeRobado(dniEnCurso, dni, viajesEnCurso): #Borra el viaje que estaba en curso del usuario antes de que le roben la bici.
-	with open("viajesEnCurso.bin", "rb") as arch:
-		dicAux = {}
-		seguir = True
-		while seguir == True:
-			try:
-				dato = pickle.load(arch)
-				dicAux[dato[0]] = [dato[1], dato[2], dato[3]]
-			except EOFError:
-				seguir = False
-	del(dicAux[dniEnCurso])
-	arch = open("viajesEnCurso.bin", "wb") # Limpio (vacío) el archivo binario de viajesEnCurso.
-	arch.close()
-	for dni in dicAux:
-		grabarEnViajesEnCurso(dni, dicAux[dni][0], dicAux[dni][1], dicAux[dni][2]) #Lo vuelvo a cargar sin el viaje en curso anterior.
+	viajes.close()
 main()
