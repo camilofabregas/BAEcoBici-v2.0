@@ -90,5 +90,9 @@ def estacionesMasActivas(estaciones, viajesFinalizados):
 	for estaciones in topOrdenado:
 		print("Estacion {} con {} retiros y devoluciones.".format(estaciones[0], estaciones[1]))
 		
-def viajesRobados():
-	print("VIAJES ROBADOS")
+def viajesRobados(robosBicicletas):
+	print('\n**** VIAJES ROBADOS ****\n')
+	indice = 0
+	for dniLadron in robosBicicletas:
+		indice += 1
+		print('{}. {}, {}. Cantidad de robos: {}'.format(indice, dniLadron, robosBicicletas[dniLadron][0], len(robosBicicletas[dniLadron][1])))
