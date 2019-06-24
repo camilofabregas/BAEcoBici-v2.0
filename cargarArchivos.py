@@ -113,33 +113,22 @@ def repartirBicicletasEstacion(estaciones, bicicletas):
 		contador += 1
 	return estaciones, lBicicletas
 
-def cargarViajesEnCurso(viajesEnCurso):
+def cargarBinarios(ruta, robosBicicletas, viajesEnCurso):
 	try:
-		with open("viajesEnCurso.bin", "rb") as arch:
+		with open(ruta, 'rb') as arch:
 			seguir = True
 			while seguir:
 				try:
-					viaje = pickle.load(arch)
-					viajesEnCurso[viaje[0]] = [viaje[1], viaje[2], viaje[3]]
+					dato = pickle.load(arch)
+					if ruta == 'viajesEnCurso.bin':
+						viajesEnCurso[dato[0]] = [dato[1], dato[2], dato[3]]
+					else:
+						robosBicicletas[dato[0]] = [dato[1], dato[2]]
 				except EOFError:
 					seguir = False
-			return viajesEnCurso
+			return viajesEnCurso, robosBicicletas
 	except FileNotFoundError:
-		return viajesEnCurso
-
-def cargarRobosBicicletas(robosBicicletas):
-	try:
-		with open("robosBicicletas.bin", "rb") as arch:
-			seguir = True
-			while seguir:
-				try:
-					robo = pickle.load(arch)
-					robosBicicletas[robo[0]] = [robo[1], robo[2]]
-				except EOFError:
-					seguir = False
-			return robosBicicletas
-	except FileNotFoundError:
-		return robosBicicletas
+		return viajesEnCurso, robosBicicletas
 
 def cargarViajesFinalizados (viajesFinalizados):
 	fin = ["","","","","","", 9999999999999999]
