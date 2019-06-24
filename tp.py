@@ -277,7 +277,8 @@ def acumularViajes(usuario, viajesFinalizados, bicicletaAsignada, estacionRetira
 		viajesFinalizados[usuario] = [(bicicletaAsignada, estacionRetirar, time(horaSalida, minSalida, segSalida), estacionDevolver, time(horaLlegada, minLlegada, segLlegada))]
 	else:
 		viajesFinalizados[usuario].append((bicicletaAsignada, estacionRetirar, time(horaSalida, minSalida, segSalida), estacionDevolver, time(horaLlegada, minLlegada, segLlegada)))
-
+	grabarEnViajesFinalizados(usuario, bicicletaAsignada, estacionRetirar, estacionDevolver, horarioSalida, horarioLlegada)
+	
 def viajesAleatoriosMultiples(usuarios, bicicletas, estaciones, usuariosEnViaje, viajesFinalizados):
 	cantidad = ingresarEntreRangos(1, 100, "\n[SOLICITUD] Ingrese entre 1 y 100 la cantidad de viajes aleatorios que desea generar: ")
 	for viaje in range(cantidad):
