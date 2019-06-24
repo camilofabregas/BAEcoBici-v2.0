@@ -507,6 +507,7 @@ def asignarBicicletaAlLadron(viajesEnCurso, robosBicicletas, usuarios, dni, idBi
 	for dniEnCurso in viajesEnCurso.copy():
 		if viajesEnCurso[dniEnCurso][0] == idBicicletaParaRobar:
 			guardarRobo(robosBicicletas, dni, idBicicletaParaRobar, usuarios, dniEnCurso)
+			borrarViajeRobado(dniEnCurso, dni, viajesEnCurso)
 			viajesEnCurso[dni] = viajesEnCurso.pop(dniEnCurso) #Cambio el dni anterior por el del ladrón. Pero el resto de los datos quedan iguales.
 			grabarEnViajesEnCurso(dni, viajesEnCurso[dni][0], viajesEnCurso[dni][1], viajesEnCurso[dni][2])
 	
@@ -536,4 +537,20 @@ def grabarEnRobosBicicletas(robosBicicletas, dni, idBicicletaParaRobar):
 		robo = []
 		robo = [dni, robosBicicletas[dni][0], robosBicicletas[dni][1]]
 		pkl.dump(robo)
+
+def borrarViajeRobado(dniEnCurso, dni, viajesEnCurso): #Borra el viaje que estaba en curso del usuario antes de que le roben la bici.
+	with open("viajesEnCurso.bin", "rb") as arch:
+		dicAux = {}
+		seguir = True
+		while seguir == True:
+			try:
+				dato = pickle.load(arch)
+				dicAux[dato[0]] = [dato[1], dato[2], dato[3]]
+			except EOFError:
+				seguir = False
+	del(dicAux[dniEnCurso])
+	arch = open("viajesEnCurso.bin", "wb") # Limpio (vacío) el archivo binario de viajesEnCurso.
+	arch.close()
+	for dni in dicAux:
+		grabarEnViajesEnCurso(dni, dicAux[dni][0], dicAux[dni][1], dicAux[dni][2]) #Lo vuelvo a cargar sin el viaje en curso anterior.
 main()
