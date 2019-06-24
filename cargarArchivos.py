@@ -11,6 +11,7 @@ def cargarArchivos():
 	cargarRobosBicicletas(robosBicicletas)
 	repartirBicicletasEstacion(estaciones, bicicletas)
 	cargarViajesEnCurso(viajesEnCurso)
+	cargarViajesFinalizados (viajesFinalizados)
 	return usuarios, bicicletas, estaciones, viajesEnCurso, viajesFinalizados, robosBicicletas
 
 def chequearUsuariosMaestro(usuarios):
