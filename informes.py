@@ -4,8 +4,7 @@ from datetime import time
 def topUsuariosCantidadViajes(usuarios, viajesFinalizados):
 	top = {}
 	for dni in viajesFinalizados:
-		if len(top) <= 10:
-			top[usuarios[dni][1]] = len(viajesFinalizados[dni])
+		top[dni] = len(viajesFinalizados[dni])
 	print("**** TOP 10 USUARIOS CON MAYOR CANTIDAD DE VIAJES ****")
 	topOrdenado = sorted(top.items(), key = lambda x:x[1], reverse = True)
 	for usuarios in topOrdenado:
